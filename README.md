@@ -3,6 +3,50 @@
 
 ---
 
+### Why
+
+Node-Machines creates typed, modular functions that each have explicit purposes.
+GraphMachine will understand the type of data required for the Machines' input and the resulting output, and build a plan for how to take the given information and traverse via Node-Machines to the desired output.
+
+#### Long-term goal: Knowledge Graph
+
+Strongly typed querying (GraphQL) for artificial intelligence to use to obtain data given some unrelated data.
+Such as asking the question `What is @Glavin001's home address?` could recognize that `Glavin001` is the `login` value for `GitHubUser` type and it could traverse through machines of the `GitHubUser` to access the `email` and from `email` could lookup `Contact`s with the same `email`. Finally, the `Contact` has an `address` field.
+
+Thus, the plan is `GitHubUser => Email => Contact => Address
+
+Retrieve `email` for `GitHub.login = Glavin001`:
+
+```graphql
+{
+  github {
+    user(login: "Glavin001") {
+      email
+    }
+  }
+}
+```
+
+Retrieve the `Contact` with that `email`:
+
+```graphql
+{
+  contacts {
+     contact(email: "glavins@email.com") {
+       facebook_id
+       addresses(location: "home") {
+         street
+         postal_code
+       }
+     }
+  }
+}
+```
+
+Notice we could also return the `facebook_id` for the `Contact`. 
+Thus, given only a GitHub login/username we could traverse the knowledge graph to obtain unrelated information such as Facebook account, addresses, phone numbers, and much more!
+
+
 ### Input
 
 Add types on top of the Node-Machines.
@@ -10,7 +54,8 @@ Add types on top of the Node-Machines.
 ```javascript
 let types = {
   "GitHubUser": {
-    "login": "String"
+    "login": "String",
+    "email": "String"
   },
   "GitHubRepo": {
     "name": "String",
